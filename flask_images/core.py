@@ -16,12 +16,12 @@ import sys
 from six import iteritems, PY3, string_types
 if PY3:
     from urllib.parse import urlparse, urlencode, quote as urlquote
-    from urllib.request import urlopen
+    from urllib.request import Request, urlopen
     from urllib.error import HTTPError
 else:
     from urlparse import urlparse
     from urllib import urlencode, quote as urlquote
-    from urllib2 import urlopen
+    from urllib2 import Request, urlopen
 
 from PIL import Image, ImageFilter
 from flask import request, current_app, send_file, abort
@@ -315,7 +315,11 @@ class Images(object):
                 log.info('downloading %s' % remote_url)
                 tmp_path = path + '.tmp-' + str(os.getpid())
                 try:
-                    remote_file = urlopen(remote_url).read()
+                    req = Request(remote_url)
+                    req.add_header('User-Agent', request.headers.get('User-Agent'))
+                    req.add_header('Accept', "*/*")
+                    req.add_header('Accept-Encoding', ', '.join(['gzip', 'deflate']))
+                    remote_file = urlopen(req).read()
                 except HTTPError as e:
                     # abort with remote error code (403 or 404 most times)
                     # log.debug('HTTP Error: %r' % e)
