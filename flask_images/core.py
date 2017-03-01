@@ -306,6 +306,7 @@ class Images(object):
 
             # Download the remote file.
             makedirs(current_app.config['IMAGES_CACHE'])
+            remote_url = remote_url.encode("utf-8")
             path = os.path.join(
                 current_app.config['IMAGES_CACHE'],
                 hashlib.md5(remote_url).hexdigest() + os.path.splitext(parsed.path)[1]
