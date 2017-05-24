@@ -355,9 +355,8 @@ class Images(object):
         quality = int(quality) if quality else 75
         format = query.get('format', '').lower()
         if not format:
-            img = Image.open(path)
-            format = img.format.lower()
-            img.close()
+            with Image.open(path) as img:
+                format = img.format.lower()
         has_version = 'version' in query
         use_cache = query.get('cache', True)
         enlarge = query.get('enlarge', False)
